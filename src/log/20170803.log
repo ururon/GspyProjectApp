@@ -1,0 +1,13 @@
+2017-08-03 11:10:51 52095     INFO    env                    logToFile                        AppVersion:1.3.0.1,Darwin,x64,darwin,16.7.0,BuiltType:0
+2017-08-03 11:10:51 52095     INFO    env                    logToFile                        Clear Logs .
+2017-08-03 11:10:51 52095     INFO    Main                   Main                             Ready
+2017-08-03 11:10:51 52095     666     666                    666                              file:///Users/Robert_lee/Desktop/testcode/TestApp2(Angular2)/index.html
+2017-08-03 11:45:27 53104     INFO    env                    logToFile                        AppVersion:1.3.0.1,Darwin,x64,darwin,16.7.0,BuiltType:0
+2017-08-03 11:45:27 53104     INFO    env                    logToFile                        Clear Logs .
+2017-08-03 11:45:27 53104     INFO    Main                   Main                             Ready
+2017-08-03 11:45:28 53104     666     666                    666                              file:///Users/Robert_lee/Desktop/testcode/TestApp2(Angular2)/index.html
+2017-08-03 11:46:16 53152     INFO    env                    logToFile                        AppVersion:1.3.0.1,Darwin,x64,darwin,16.7.0,BuiltType:0
+2017-08-03 11:46:16 53152     INFO    env                    logToFile                        Clear Logs .
+2017-08-03 11:46:16 53152     INFO    Main                   Main                             Ready
+2017-08-03 11:46:17 53152     666     666                    666                              file:///Users/Robert_lee/Desktop/testcode/TestApp2(Angular2)/index.html
+2017-08-03 11:46:20 53152     INFO    Main                   Main                             Close
