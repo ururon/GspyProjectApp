@@ -1,0 +1,12 @@
+.nav-panel{
+    width: 100%;
+    height: 100%;
+    color: rgba(0, 0, 255, 0.5);
+}
+
+.nav-panel-footer{
+    position: relative;
+    height: 100%;
+    color: rgba(205, 36, 207, 0.5);
+    -webkit-box-pack: end;
+}

@@ -2,7 +2,7 @@
 * Copyright (C) Genius Corporation. All rights reserved.
 *--------------------------------------------------------*/
 
-var env = require('../../backend/generic/env');
+var env = require('../../generic/env');
 
 'use strict';
 

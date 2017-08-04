@@ -11,10 +11,10 @@ var __extends = this.__extends || function (d, b) {
 
 var events = require('events');
 var fs = require('fs');
-var env = require('../../backend/generic/env');
-var funcVar = require('../../backend/generic/FunctionVariates');
-var evtType = require('../../backend/generic/EventVariates').EventTypes;
-var errCode = require('../../backend/generic/ErrorCode').ErrorCode;
+var env = require('../../generic/env');
+var funcVar = require('../../generic/FunctionVariates');
+var evtType = require('../../generic/EventVariates').EventTypes;
+var errCode = require('../../generic/ErrorCode').ErrorCode;
 var pSystem = require('../Platform/SysApi');
 
 'use strict';

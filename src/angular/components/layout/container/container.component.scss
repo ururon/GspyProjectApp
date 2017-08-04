@@ -1,0 +1,10 @@
+@import '../../../assets/scss/app.variables';
+
+.container{
+    display: -webkit-box;
+    width: $window-width ; 
+    height: $window-height;
+    color: #fff;
+    background: black;
+    padding: 0px;
+}

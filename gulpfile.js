@@ -12,26 +12,37 @@ let ts = require('gulp-typescript');
 let uglify = require('gulp-uglify');
 let tsProject = ts.createProject('tsconfig.json', {typescript: require('typescript')});
 var install = require("gulp-install");
+let sass = require('gulp-sass');
+let rename = require('gulp-rename');
 
-gulp.task('default',['ts']);
+gulp.task('default',['html']);
 
-gulp.task('ts',['html'],function(){
+
+gulp.task('html',['css'],function(){
+    return gulp.src('./src/angular/**/*.html').pipe(gulp.dest('./App'));
+});
+
+gulp.task('css',['scss'],function(){
+    return gulp.src(['./src/angular/**/*.css']).pipe(gulp.dest('./App'));
+});
+
+gulp.task('scss',['sass'],function(){
+    return gulp.src('./src/angular/assets/scss/**/*.scss').pipe(rename({ dirname: '' })).pipe(sass().on('error', sass.logError)).pipe(gulp.dest('./App/css'));
+});
+
+gulp.task('sass',['ts'],function(){
+    return gulp.src(['./src/angular/**/*.scss','!./src/angular/assets/scss/**/*.scss']).pipe(sass().on('error', sass.logError)).pipe(gulp.dest('./App'));
+});
+
+gulp.task('ts',['backend'],function(){
     let tsResult = tsProject.src().pipe(tsProject());    
     return tsResult.js.pipe(uglify()).pipe(gulp.dest('./App/'));
 });
 
-gulp.task('html',['sass'],function(){
-    return gulp.src('./src/angular/**/*.html').pipe(gulp.dest('./App'));
-});
-
-gulp.task('sass',['system'],function(){
-    return gulp.src(['./src/angular/**/*.css']).pipe(gulp.dest('./App'));
-});
-
-gulp.task('system',['backend'],function(){
-   let src = ['./src/electron.js']
-   return gulp.src(src).pipe(gulp.dest('./App'));
-});
+// gulp.task('system',['backend'],function(){
+//    let src = ['electron.js']
+//    return gulp.src(src).pipe(gulp.dest('./App'));
+// });
 
 gulp.task('backend',['reSystem'],function(){
     return gulp.src(['./src/backend/**/*','!./src/backend/data/**/*']).pipe(gulp.dest('App/backend'));

@@ -110,7 +110,7 @@
     "test": "hello",
     "start":"gulp"
   },
-  "author": "Robert",
+  "author": "",
   "license": "ISC",
   "window": {
     "frame": false,

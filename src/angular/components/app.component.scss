@@ -1,0 +1,29 @@
+@import '../assets/scss/app.variables';
+
+.main-app{
+    height: $window-height;
+    width:  $window-width;
+
+    .content{
+        width:      $window-width;
+        height:     $main-content-height;
+        display:    -webkit-box;
+
+        .right-panel{
+            width: $new-content-width;
+            height: $main-content-height - $app-aside-width;
+            .app-content-panel{
+                height: 100%;
+                border: none;
+                padding: 100px;
+                -webkit-app-region: no-drag;    
+            }
+        }
+        .nav{
+            width:      $app-aside-width + 50;
+            height:     $main-nav-height;
+            background: rgba(200, 200, 200, 0.5);
+            pointer-events: auto;
+        }
+    }
+}

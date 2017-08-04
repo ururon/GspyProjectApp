@@ -1,10 +1,10 @@
 var events = require('events');
-var env = require('../backend/generic/env');
+var env = require('../generic/env');
 var fs = require('fs');
 var path = require('path');
-var funcVar = require('../backend/generic/FunctionVariates');
-var evtType = require('../backend/generic/EventVariates').EventTypes;
-var errCode = require('../backend/generic/ErrorCode').ErrorCode;
+var funcVar = require('../generic/FunctionVariates');
+var evtType = require('../generic/EventVariates').EventTypes;
+var errCode = require('../generic/ErrorCode').ErrorCode;
 var system = require('./System/System');
 
 
