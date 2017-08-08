@@ -108,7 +108,7 @@ var SmartWindow = (function (_super) {
     SmartWindow.prototype.load = function () {
         _this._win.loadURL(_this.getUrl());
         // 打开开发工具界面
-        //_this._win.openDevTools();
+        _this._win.openDevTools();
     };
     SmartWindow.prototype.getUrl = function () {
         var url = 'file://' + __dirname.replace(/\\/g, '/') + '/index.html';

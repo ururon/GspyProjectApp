@@ -34,15 +34,14 @@ gulp.task('sass',['ts'],function(){
     return gulp.src(['./src/angular/**/*.scss','!./src/angular/assets/scss/**/*.scss']).pipe(sass().on('error', sass.logError)).pipe(gulp.dest('./App'));
 });
 
-gulp.task('ts',['backend'],function(){
+gulp.task('ts',['js'],function(){
     let tsResult = tsProject.src().pipe(tsProject());    
     return tsResult.js.pipe(uglify()).pipe(gulp.dest('./App/'));
 });
 
-// gulp.task('system',['backend'],function(){
-//    let src = ['electron.js']
-//    return gulp.src(src).pipe(gulp.dest('./App'));
-// });
+gulp.task('js',['backend'],function(){
+    return gulp.src(['./src/angular/assets/js/**/*']).pipe(gulp.dest('./App/js'));
+});
 
 gulp.task('backend',['reSystem'],function(){
     return gulp.src(['./src/backend/**/*','!./src/backend/data/**/*']).pipe(gulp.dest('App/backend'));

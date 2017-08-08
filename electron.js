@@ -94,7 +94,10 @@ var Smart = (function () {
             }
             global.GeniusProtocol.on(evtVar.ProtocolMessage, function(obj){
                 env.log(env.level.INFO,'main','GeniusProtocol',JSON.stringify(obj))
-				global.MainWindow.win.webContents.send(evtVar.ProtocolMessage, obj);
+                //global.MainWindow.win.webContents.send(evtVar.ProtocolMessage, obj);
+                var t = {Func:obj.Func,SN:obj.SN,Param:obj.Param};
+                // console.log(JSON.stringify(t));
+                global.MainWindow.win.webContents.executeJavaScript(`window.dispatchEvent(new CustomEvent('icpEvent', {'detail':'${JSON.stringify(t)}'}));`);
 			});
             if (isCrashed === null || isCrashed === undefined || !isCrashed){
                 if (!opts.noShow){
