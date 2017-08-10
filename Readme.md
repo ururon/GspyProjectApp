@@ -1,4 +1,4 @@
-# SmartGenius
+<!-- # SmartGenius
 1. npm 版本 >=3.0  下载网址:  https://nodejs.org/en/
 2. electron 版本 1.4.10 下载网址: https://github.com/electron/electron/releases/tag/v1.4.10
 3. Visual Studio Code 下载网址: https://code.visualstudio.com/
@@ -49,3 +49,9 @@
         ]
     }
     
+前端呼叫後端流程
+ex. 由container.component 透過 protocol.service 再傳至 protocolfunction 到system的function
+但此方式有個問題, system function無法callback參數值只能回傳是否有error, 修正方式callback obj裡面包含err和param
+
+後端通知前端流程
+Component 透過ElectronEventService來收到後端的通知 -->
