@@ -73,78 +73,9 @@ var SystemApi = (function (_super) {
 	    }
     };
 
-    SystemApi.prototype.GetMousePointSpeed = function (p, callback) {
-        callback(_this.System.GetMouseSpeed());
-    };
-
-    SystemApi.prototype.SetMousePointSpeed = function (speed, callback) {
-        _this.System.SetMouseSpeed(Number(speed));
-        callback();
-    };
-
-    SystemApi.prototype.GetMouseDoubleClickSpeed = function (p, callback) {
-        callback(_this.System.GetDoubleClickTime());
-    };
-
-    SystemApi.prototype.SetMouseDoubleClickSpeed = function (tmr, callback) {
-        _this.System.SetDoubleClickTime(Number(tmr));
-        callback();
-    };
-
-    SystemApi.prototype.GetSwapButtonState = function (p, callback) {
-        callback(_this.System.GetSwapButton());
-    };
-
-    SystemApi.prototype.SetSwapButtonState = function (btn, callback) {
-        _this.System.SetSwapButton(Number(btn));
-        callback();
-    };
-
-    SystemApi.prototype.GetDeviceWheelSpeed = function (p, callback) {
-        callback(_this.System.GetWheelScrollLines());
-    };
-
-    SystemApi.prototype.SetDeviceWheelSpeed = function (scroll, callback) {
-        _this.System.SetWheelScrollLines(Number(scroll));
-        callback();
-    };
-
-    //设置语言
-    SystemApi.prototype.SetLanguage = function (lang, callback) {
-        try{
-            if(lang === undefined)
-            {
-                env.log(env.level.INFO,System,'System','SetLanguage','SetLanguage error : lang is null.');
-                callback();
-                return;
-            }
-            var appSettings = JSON.parse(fs.readFileSync(env.appSettingsPath,'UTF-8'));
-            lang = lang.toLowerCase();
-            if(appSettings.SystemConfig.Language != lang)
-            {
-                appSettings.SystemConfig.Language = lang;
-                if(env.isTestMode){
-                    if(appSettings.SystemConfig.Language == "cn")
-                        appSettings.UpdateURI.UpdateURLLast = appSettings.UpdateURI.UpdateURLTestCN;
-                    else if(appSettings.SystemConfig.Language == "tw")
-                        appSettings.UpdateURI.UpdateURLLast = appSettings.UpdateURI.UpdateURLTestTW;
-                    else
-                        appSettings.UpdateURI.UpdateURLLast = appSettings.UpdateURI.UpdateURLTestEN;
-                }else{
-                    if(appSettings.SystemConfig.Language == "cn")
-                        appSettings.UpdateURI.UpdateURLLast = appSettings.UpdateURI.UpdateURLCN;
-                    else if(appSettings.SystemConfig.Language == "tw")
-                        appSettings.UpdateURI.UpdateURLLast = appSettings.UpdateURI.UpdateURLTW;
-                    else
-                        appSettings.UpdateURI.UpdateURLLast = appSettings.UpdateURI.UpdateURLEN;
-                }
-                fs.writeFileSync(env.appSettingsPath, JSON.stringify(appSettings, null, "\t"));
-            }
-            callback();
-        }catch(e){
-            env.log(env.level.DEBUG,'System','SetLanguage','SetLanguage error : '+ e.message);
-            callback();
-        }
+    SystemApi.prototype.abctest = function (p, callback) {
+        env.log(env.level.INFO,'system','abctest',JSON.stringify(p));
+        callback('success','abc');
     };
 
     //系统函数

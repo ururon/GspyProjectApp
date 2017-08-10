@@ -1,4 +1,3 @@
- var req = require('ajax-request');  
  var env = require('./env'); 
  var path = require('path');
  var fs = require('fs');
@@ -6,25 +5,8 @@
  var os = require('os');
  var zlib = require('zlib'); 
  var jsn = require('./JSON'); 
- var scanFS = require('scan-fs' ).create();
  var cp = require('child_process');
  var ffs = require('final-fs');
-
-
-function getAjaxJsonData(websiteurl,callback)
-{ 
-	 req({
-		  url: websiteurl,
-		  method: 'GET', 
-		  json: true
-		 }, function(err, res, body) 
-		 {  
-		  	callback(err,body);
-		});
-};
-
-exports.getAjaxJsonData = getAjaxJsonData;
-
 
 function encryptionData(data,callback)
 {

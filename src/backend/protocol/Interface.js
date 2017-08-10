@@ -6,6 +6,7 @@ var funcVar = require('../generic/FunctionVariates');
 var evtType = require('../generic/EventVariates').EventTypes;
 var errCode = require('../generic/ErrorCode').ErrorCode;
 var system = require('./System/System');
+var AppObj = require("../dbapi/AppDB");
 
 
 'use strict';
@@ -29,7 +30,8 @@ var SmartProtocol = (function (_super) {
             _this.ForegroundAppPath = _this.SystemApi.GetForegroundApp();
             _this.SystemApi.on(evtType.SessionChanged, _this.OnSessionChange);
             _this.SystemApi.on(evtType.HotPlug, _this.OnHotPlug);
-            _this.SystemApi.on(evtType.UIViewInited, _this.OnUIViewInited);            
+            _this.SystemApi.on(evtType.AppChanged, _this.OnAppChange);  
+            _this.AppDB = new AppObj.AppDB();     
             // _this.SupportMouse.on(evtType.UpdateFirmwareReConnectTimeout, _this.OnUpdateFirmwareReConnectTimeout);
             // _this.SupportMouse.on(evtType.ProtocolMessage, _this.OnProtocolMessage);
             // _this.SupportKeyboard.on(evtType.ProtocolMessage, _this.OnProtocolMessage);
@@ -57,32 +59,8 @@ var SmartProtocol = (function (_super) {
         		return;
         	}
             if (Obj.Func == funcVar.Names.InitDevice){
-                //_this.InitDevice(callback);
+                _this.InitDevice(callback);
                 return;
-            }
-            if (_this.UpdateManager !== undefined){
-                if (Obj.Func == funcVar.Names.DownloadInstallPackage){
-                    _this.UpdateManager.DownloadInstallPackage(Obj.Param.InstallPackDownloadURL, Obj.Param.InstallPackTempPath, callback);
-                    return;
-                }
-                if (Obj.Func == funcVar.Names.DownloadInstallDriver){
-                    _this.UpdateManager.DownloadInstallDriver(Obj.Param.DriverDownloadURL, callback);
-                    return;
-                }
-                if (Obj.Func == funcVar.Names.UpdateDriver){
-                    _this.UpdateManager.UpdateDriver(null, callback);
-                    return;
-                }
-                if (Obj.Func == funcVar.Names.CheckUpdateFromNet){
-                    _this.UpdateManager.CheckUpdateFromNet(false, callback);
-                    return;
-                }
-            }
-            if (Obj.Func == funcVar.Names.UpdateFirmwareBoot){
-                _this.IsUpdatingFirmware = true;
-            }
-            if (Obj.Func == funcVar.Names.UpdateFirmware){
-                _this.IsUpdateFirmwareRefreshDevice = true;
             }
 
         	switch(Obj.Type){
@@ -121,92 +99,24 @@ var SmartProtocol = (function (_super) {
 	    	return false;
 	    return true;
     };
-    //初始化更新管理
-    SmartProtocol.prototype.InitUpdateManager = function () {
-         env.log(env.level.DEBUG,'Interface','InitUpdateManager',' begin.'); 
-         if (_this.UpdateManager === undefined){
-             _this.UpdateManager = new um.UpdateManagerClass();
-             _this.UpdateManager.on(evtType.ProtocolMessage, _this.OnProtocolMessage);
-             _this.UpdateManager.StartCheckUpdate();
-         }
-    };
-
-    //初始化更新管理
-    SmartProtocol.prototype.InitNotifyManager = function () { 
-        env.log(env.level.DEBUG,'Interface','InitNotifyManager',' begin.'); 
-        if (_this.NotifyManager === undefined){
-            _this.NotifyManager = new notify.NotificationManagerClass();
-            _this.NotifyManager.on(evtType.ProtocolMessage, _this.OnProtocolMessage);
-            _this.NotifyManager.StartCheckMessage();
-        }
-    };
+    
 
     //初始化设备列表
     SmartProtocol.prototype.InitDevice = function (callback) { 
         env.log(env.level.DEBUG,'Interface','InitDevice',' begin.');
         try{       
-            _this.IsRefreshDevice = true;
-
-            if(_this.SupportModels == undefined)
-            {
-                _this.ModelsdbClass.getTemplateDevice('','','',function(sm){          
-                    if (sm === undefined)  
-                        env.log(env.level.WARN,'Interface','InitDevice',' Read SupportModels file undefined.');
-                    _this.SupportModels = sm;
-
-                    Promise.all([_this.SupportMouse.InitDevice(_this.SupportModels)]).then(function() {
-                        //mouse success
-                        callback();
-                        Promise.all([_this.SupportKeyboard.InitDevice(_this.SupportModels)]).then(function() {
-                            //mouse success and keyboard success
-                            _this.IsRefreshDevice = false;
-                            callback();
-                        }, function() {
-                            //mouse success and keyboard fail
-                            _this.IsRefreshDevice = false;
-                            callback();
-                        });   
-                    }, function() {
-                        //mouse fail
-                        callback();
-                        Promise.all([_this.SupportKeyboard.InitDevice(_this.SupportModels)]).then(function() {
-                            //mouse fail and keyboard success
-                            _this.IsRefreshDevice = false;
-                            callback();
-                        }, function() {
-                            //mouse fail and keyboard fail
-                            _this.IsRefreshDevice = false;
-                            callback();
-                        });   
-                    });
-                });
+            // _this.AppDB.insertDevice(function(doc){
+            //     env.log('777','777','777',JSON.stringify(doc));
+            // })
+            if(_this.SupportDevice == undefined){
+                _this.AppDB.getDevice2(function(data){
+                    _this.SupportDevice = data;
+                    env.log('777','777','777',JSON.stringify(_this.SupportDevice));
+                })
             }
-            else
-            {
-                Promise.all([_this.SupportMouse.InitDevice(_this.SupportModels)]).then(function() {
-                    callback();
-                    Promise.all([_this.SupportKeyboard.InitDevice(_this.SupportModels)]).then(function() {
-                        _this.IsRefreshDevice = false;
-                        callback();
-                    }, function() {
-                        _this.IsRefreshDevice = false;
-                        callback();
-                    });   
-                }, function() {
-                    callback();
-                    Promise.all([_this.SupportKeyboard.InitDevice(_this.SupportModels)]).then(function() {
-                        _this.IsRefreshDevice = false;
-                        callback();
-                    }, function() {
-                        _this.IsRefreshDevice = false;
-                        callback();
-                    });   
-                });
-            }
+            else{
 
-            _this.InitUpdateManager();
-            _this.DownloadServerFWVersion();
-            //_this.AutoUpload();
+            }
         }catch(ex){ 
             env.log(env.level.ERROR,'Interface','InitDevice',` ex:${ex.message}`); 
             _this.IsRefreshDevice = false;
@@ -235,23 +145,6 @@ var SmartProtocol = (function (_super) {
         }catch(ex){
             env.log(env.level.ERROR,'Interface','CloseAllDevice',`ex:${ex.message}`);  
             callback();
-        }
-    };
-
-    //UI initialize finish, to check device status
-    SmartProtocol.prototype.OnUIViewInited = function () {
-        env.log(env.level.DEBUG,'Interface','OnUIViewInited',`begin OnUIViewInited`);
-        
-        if(!_this.IsRefreshDevice)
-        {
-            var Obj={
-                Type : funcVar.Types.System,
-                SN : null,
-                Func : evtType.RefreshDevice,
-                Param : null
-            };
-            _this.emit(evtType.ProtocolMessage, Obj);
-            env.log(env.level.INFO,'Interface','OnUIViewInited',`Send RefreshDevice event to UI`);
         }
     };
 
@@ -284,7 +177,15 @@ var SmartProtocol = (function (_super) {
         var USBData = {};
         USBData.VID = baseInfo.VID.toString(16); 
         USBData.PID = baseInfo.PID.toString(16);  
+        USBData.PlugType = baseInfo.PlugType;
         try{
+            for(var device of _this.SupportDevice){
+                if( Number(device.VID)== Number(baseInfo.VID) && Number(device.PID)== Number(baseInfo.PID))
+                {
+                    USBData.DeviceName = device.DeviceName;
+                }
+            }
+
             var Obj={
                         Type : funcVar.Types.System,
                         SN : null,
@@ -292,40 +193,106 @@ var SmartProtocol = (function (_super) {
                         Param : USBData
                     };
             _this.emit(evtType.ProtocolMessage, Obj);
-            
-            env.log(env.level.INFO,'interface','OnHotPlug',JSON.stringify(Obj))
-            // if(baseInfo.PlugType === 1 && ((Number(baseInfo.VID) === 0x1fc9 && Number(baseInfo.PID) === 0x000f) || baseInfo.DeviceType === 3)){
-            //     _this.SupportMouse.UpdateNXPFirmware(_this.UpdateFirmwareBootComplete);
-            //     return;
-            // }
-        
-            // if (baseInfo.DeviceType === 2 || baseInfo.DeviceType === 3)
-            //     return;
 
-            // var supModel = undefined;
-            // for (var model of _this.SupportModels){
-            //     if(Number(model.VID) === Number(baseInfo.VID) && Number(model.PID) === Number(baseInfo.PID)){          
-            //         env.log(env.level.DEBUG,'Interface','OnHotPlug',`Find Genius Device : `+JSON.stringify(model));              
-            //         supModel = model;
-            //         break;
-            //     }
-            // }
-            
-            // if (supModel !== undefined && _this.IsUpdatingFirmware && baseInfo.PlugType === 0){
-            //     return;
-            // }
-
-            // if (supModel !== undefined && !_this.IsRefreshDevice){
-            //     if ((baseInfo.PlugType === 1 && (extInfo === undefined || extInfo.HidUsage == supModel.EnumLastInterface)) || baseInfo.PlugType === 0){
-            //         clearTimeout(_this.RefreshDeviceWaitNextEventTimeoutId);
-            //         _this.RefreshAllGeniusDevice(1500);
-            //     }
-            // }
         }catch(ex){ 
             env.log(env.level.ERROR,'Interface','OnHotPlug',`[ex:${ex.message}]`);
             _this.IsRefreshDevice = false;
         }
         
+    };
+
+    //App切换时，应用Profile
+    SmartProtocol.prototype.OnAppChange = function (aAppPath) {  
+        try{
+            if(_this.AppChangeWaitNextEventTimeoutId !== undefined){
+                env.log(env.level.DEBUG,'Interface','OnAppChange',`appPath:${aAppPath}`); 
+                clearTimeout(_this.AppChangeWaitNextEventTimeoutId);
+                _this.AppChangeWaitNextEventTimeoutId = undefined;
+            }
+            var isGeniusAppForeground = (aAppPath.slice(aAppPath.length - 10).toLowerCase().slice(0, 6) === 'genius');     
+            if (!isGeniusAppForeground && !_this.IsAppChangeSettingProfile  )
+            { 
+                if(aAppPath !='')
+                {
+                    try
+                    {    
+                         if(env.isWindows)
+                         { 
+                            var PathArray = aAppPath.split("\\"); var i = PathArray.length;                          
+                            var iconArray = PathArray[i-1].split(".");var icon = iconArray[0]+".ico";
+                            var o = {}; o.appName = PathArray[i-1]; o.appPath = aAppPath; o.iconName = icon;
+                            _this.Historydb.addHistory(o,function(err)
+                            {
+                                if(!err)
+                                {
+                                    let t = {}; t.from = aAppPath; t.To = path.join(env.appRoot,'img','icon',icon); t.Size = 48;
+                                    _this.SupportMouse.getApplicationIcon(t); 
+                                    var Obj = {
+                                        Type : funcVar.Types.Mouse,
+                                        SN : '',
+                                        Func : evtType.RefreshMacroShortCutKeyData,
+                                        Param : ''
+                                    };
+                                    _this.emit(evtType.ProtocolMessage, Obj);
+                                }else{
+                                }                         
+                            })              
+                        }
+                        else
+                        {
+                            var PathArray = aAppPath.split("/");  var i = PathArray.length;      
+                            var iconArray = PathArray[i-1].split(".");var icon = iconArray[0];
+                            var tmpAppPath;
+                            var TempIndex = aAppPath.indexOf(".app");
+
+                            if(TempIndex != 0)
+                                tmpAppPath = aAppPath.substr(0, TempIndex+4);
+                            else
+                                tmpAppPath = aAppPath;
+
+                            var o = {}; o.appName = PathArray[i-1]; o.appPath = tmpAppPath; o.iconName = icon.replace(/\s+/g,"")+".ico";
+                            _this.Historydb.addHistory(o,function(err){
+                                if(!err){ 
+                                    var outPath = path.join(env.appRoot,'img','icon');
+                                    tools.getMacAppIcns(tmpAppPath,outPath+"/",icon.replace(/\s+/g,""),function(icon){});
+                                    var Obj = {
+                                        Type : funcVar.Types.Mouse,
+                                        SN : '',
+                                        Func : evtType.RefreshMacroShortCutKeyData,
+                                        Param : ''
+                                    };
+                                    _this.emit(evtType.ProtocolMessage, Obj);
+                                }
+                            }); 
+                        }
+                    }catch(e){
+                    }
+                }
+                _this.AppChangeWaitNextEventTimeoutId = setTimeout(function(){
+                    try{ 
+                        // _this.IsAppChangeSettingProfile = true;
+                        // _this.ForegroundAppPath = aAppPath;  
+                        // Promise.all([_this.SupportMouse.AppChangeSetProfile(_this.ForegroundAppPath),_this.SupportKeyboard.AppChangeSetProfile(_this.ForegroundAppPath)]).then(function (SetResults) {
+                        //     SetResults.reduce(function (isSet) {
+                        //         if (isSet)
+                        //         {
+                        //             env.log(env.level.INFO,'Interface','OnAppChange',`SetProfile Complete : ${_this.ForegroundAppPath}`);  
+                        //             return;
+                        //         }
+                        //     });
+                        //     _this.IsAppChangeSettingProfile = false;
+                        // }); 
+
+                    }catch(ex){ 
+                         env.log(env.level.ERROR,'Interface','OnAppChange',`ex:${ex.message}`); 
+                        _this.IsAppChangeSettingProfile = false;
+                    }
+                }, 1500);
+            }
+        }catch(ex){
+            env.log(env.level.ERROR,'Interface','OnAppChange',`ex1:${ex.message}`);  
+            _this.IsAppChangeSettingProfile = false;
+        }
     };
     
  
@@ -334,7 +301,7 @@ var SmartProtocol = (function (_super) {
     //系统函数
     SmartProtocol.prototype.SystemApi = undefined;
     //支援机种
-    SmartProtocol.prototype.SupportModels = undefined;
+    SmartProtocol.prototype.SupportDevice = undefined;
     //等待下次刷新的时间
     SmartProtocol.prototype.RefreshDeviceWaitNextEventTimeoutId = undefined;
     //是否拔插时正刷新设备列表
